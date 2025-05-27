@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -110,12 +111,17 @@ public class MapEngine {
 
     List<Country> route = findShortestPath(country1, country2);
     int totalFuel = 0;
-    Map<String, Integer> continentCount = new HashMap<>();
-    for (int i = 1; i < route.size() - 1; i++) {
+    Map<String, Integer> continentCount = new LinkedHashMap<>();
+    for (int i = 0; i < route.size(); i++) {
       Country currentCountry = route.get(i);
-      totalFuel += currentCountry.getFuelCost();
-      continentCount.merge(
-          currentCountry.getContinent(), currentCountry.getFuelCost(), Integer::sum);
+
+      if (i != 0 && i != route.size() - 1) {
+        totalFuel += currentCountry.getFuelCost();
+        continentCount.merge(
+            currentCountry.getContinent(), currentCountry.getFuelCost(), Integer::sum);
+      } else if (!continentCount.containsKey(currentCountry.getContinent())) {
+        continentCount.put(currentCountry.getContinent(), 0);
+      }
     }
 
     Set<String> visitedContinents = new HashSet<>(continentCount.keySet());
