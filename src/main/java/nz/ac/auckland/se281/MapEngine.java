@@ -61,6 +61,7 @@ public class MapEngine {
         Arrays.toString(names));
   }
 
+  // asks for country input until correct input entered
   public String validateCountryInput() {
     boolean valid = false;
     String cleanedInput = null;
@@ -86,5 +87,13 @@ public class MapEngine {
   }
 
   /** this method is invoked when the user run the command route. */
-  public void showRoute() {}
+  public void showRoute() {
+    Country country1 = countryMap.get(validateCountryInput());
+    Country country2 = countryMap.get(validateCountryInput());
+
+    if (country1.equals(country2)) {
+      MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
+      return;
+    }
+  }
 }
