@@ -36,4 +36,9 @@ public class Country {
         && continent.equals(other.continent)
         && fuelCost == other.fuelCost;
   }
+
+  @Override
+  public int hashCode() {
+    return name.toLowerCase().hashCode(); // keep consistent with equals
+  }
 }
