@@ -15,6 +15,9 @@ public class MapEngine {
 
     List<String> countries = Utils.readCountries();
     List<String> adjacencies = Utils.readAdjacencies();
+
+    // we want to make a hashmap to put countries into continents potentially? is that relevant?
+    // We will implement a graph class, with nodes and edges
   }
 
   /** this method is invoked when the user run the command info-country. */
