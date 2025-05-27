@@ -109,8 +109,12 @@ public class MapEngine {
       return;
     }
 
+    // calls bfs to find shortest route
     List<Country> route = findShortestPath(country1, country2);
     int totalFuel = 0;
+
+    // creates a hash map of continent to fuel used, excluding start and end but adding as 0 entries
+    // as we do visit them
     Map<String, Integer> continentCount = new LinkedHashMap<>();
     for (int i = 0; i < route.size(); i++) {
       Country currentCountry = route.get(i);
@@ -129,14 +133,27 @@ public class MapEngine {
     visitedContinents.add(route.get(route.size() - 1).getContinent());
 
     String[] pathStrings = route.stream().map(Country::getName).toArray(String[]::new);
-    List<String> formatted = new ArrayList<>();
+    List<String> formattedContinentCounts = new ArrayList<>();
     for (Map.Entry<String, Integer> entry : continentCount.entrySet()) {
-      formatted.add(entry.getKey() + " (" + entry.getValue() + ")");
+      formattedContinentCounts.add(entry.getKey() + " (" + entry.getValue() + ")");
     }
+
+    // Finding the continent where we spend the most fuel
+    int highestFuel = 0;
+    String highestFuelKey = null;
+
+    for (String key : continentCount.keySet()) {
+      if (continentCount.get(key) > highestFuel) {
+        highestFuel = continentCount.get(key);
+        highestFuelKey = key;
+      }
+    }
+    String formattedHighestFuel = highestFuelKey + " (" + highestFuel + ")";
 
     MessageCli.ROUTE_INFO.printMessage(Arrays.toString(pathStrings));
     MessageCli.FUEL_INFO.printMessage(String.valueOf(totalFuel));
-    MessageCli.CONTINENT_INFO.printMessage(formatted.toString());
+    MessageCli.CONTINENT_INFO.printMessage(formattedContinentCounts.toString());
+    MessageCli.FUEL_CONTINENT_INFO.printMessage(formattedHighestFuel);
   }
 
   public List<Country> findShortestPath(Country start, Country end) {
