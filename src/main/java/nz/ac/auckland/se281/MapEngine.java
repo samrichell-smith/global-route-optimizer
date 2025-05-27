@@ -48,18 +48,7 @@ public class MapEngine {
   /** this method is invoked when the user run the command info-country. */
   public void showInfoCountry() {
 
-    boolean valid = false;
-    String cleanedInput = null;
-    while (!valid) {
-      MessageCli.INSERT_COUNTRY.printMessage();
-      String input = Utils.scanner.nextLine();
-      cleanedInput = Utils.capitalizeFirstLetterOfEachWord(input);
-      try {
-        valid = validateCountryInput(cleanedInput);
-      } catch (CountryNotFoundException e) {
-        MessageCli.INVALID_COUNTRY.printMessage(e.getMessage());
-      }
-    }
+    String cleanedInput = validateCountryInput();
 
     Country countryFound = countryMap.get(cleanedInput);
     Set<Country> neighbours = graph.getNeighbours(countryFound);
@@ -72,8 +61,23 @@ public class MapEngine {
         Arrays.toString(names));
   }
 
-  // checks
-  public boolean validateCountryInput(String input) throws CountryNotFoundException {
+  public String validateCountryInput() {
+    boolean valid = false;
+    String cleanedInput = null;
+    while (!valid) {
+      MessageCli.INSERT_COUNTRY.printMessage();
+      String input = Utils.scanner.nextLine();
+      cleanedInput = Utils.capitalizeFirstLetterOfEachWord(input);
+      try {
+        valid = checkCountryMap(cleanedInput);
+      } catch (CountryNotFoundException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(e.getMessage());
+      }
+    }
+    return cleanedInput;
+  }
+
+  public boolean checkCountryMap(String input) throws CountryNotFoundException {
     if (countryMap.containsKey(input)) {
       return true;
     } else {
