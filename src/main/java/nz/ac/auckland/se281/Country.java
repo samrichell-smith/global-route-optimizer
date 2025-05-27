@@ -10,4 +10,30 @@ public class Country {
     this.continent = continent;
     this.fuelCost = fuelCost;
   }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public String getContinent() {
+    return this.continent;
+  }
+
+  public int getFuelCost() {
+    return this.fuelCost;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || obj.getClass() != Country.class) {
+      return false;
+    }
+    Country other = (Country) obj;
+    return name.equals(other.name)
+        && continent.equals(other.continent)
+        && fuelCost == other.fuelCost;
+  }
 }
