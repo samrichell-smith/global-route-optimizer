@@ -1,8 +1,17 @@
 package nz.ac.auckland.se281;
 
+import static nz.ac.auckland.se281.MessageCli.INSERT_COUNTRY;
+import static nz.ac.auckland.se281.MessageCli.INSERT_DESTINATION;
+import static nz.ac.auckland.se281.MessageCli.INSERT_SOURCE;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 /** This class is the main entry point. */
@@ -37,7 +46,9 @@ public class MapEngine {
 
       for (String part : parts) {
 
-        graph.addConnection(startingCountry, countryMap.get(part));
+        if (!countryMap.get(part).equals(startingCountry)) {
+          graph.addConnection(startingCountry, countryMap.get(part));
+        }
       }
     }
 
@@ -48,7 +59,7 @@ public class MapEngine {
   /** this method is invoked when the user run the command info-country. */
   public void showInfoCountry() {
 
-    String cleanedInput = validateCountryInput();
+    String cleanedInput = validateCountryInput(INSERT_COUNTRY);
 
     Country countryFound = countryMap.get(cleanedInput);
     Set<Country> neighbours = graph.getNeighbours(countryFound);
@@ -62,11 +73,12 @@ public class MapEngine {
   }
 
   // asks for country input until correct input entered
-  public String validateCountryInput() {
+  public String validateCountryInput(MessageCli promptMessage) {
     boolean valid = false;
     String cleanedInput = null;
+
     while (!valid) {
-      MessageCli.INSERT_COUNTRY.printMessage();
+      promptMessage.printMessage();
       String input = Utils.scanner.nextLine();
       cleanedInput = Utils.capitalizeFirstLetterOfEachWord(input);
       try {
@@ -88,12 +100,74 @@ public class MapEngine {
 
   /** this method is invoked when the user run the command route. */
   public void showRoute() {
-    Country country1 = countryMap.get(validateCountryInput());
-    Country country2 = countryMap.get(validateCountryInput());
+    Country country1 = countryMap.get(validateCountryInput(INSERT_SOURCE));
+    Country country2 = countryMap.get(validateCountryInput(INSERT_DESTINATION));
 
     if (country1.equals(country2)) {
       MessageCli.NO_CROSSBORDER_TRAVEL.printMessage();
       return;
     }
+
+    List<Country> route = findShortestPath(country1, country2);
+    int totalFuel = 0;
+    Map<String, Integer> continentCount = new HashMap<>();
+    for (int i = 1; i < route.size() - 1; i++) {
+      Country currentCountry = route.get(i);
+      totalFuel += currentCountry.getFuelCost();
+      continentCount.merge(
+          currentCountry.getContinent(), currentCountry.getFuelCost(), Integer::sum);
+    }
+
+    Set<String> visitedContinents = new HashSet<>(continentCount.keySet());
+    visitedContinents.add(route.get(0).getContinent());
+    visitedContinents.add(route.get(route.size() - 1).getContinent());
+
+    String[] pathStrings = route.stream().map(Country::getName).toArray(String[]::new);
+    List<String> formatted = new ArrayList<>();
+    for (Map.Entry<String, Integer> entry : continentCount.entrySet()) {
+      formatted.add(entry.getKey() + " (" + entry.getValue() + ")");
+    }
+
+    MessageCli.ROUTE_INFO.printMessage(Arrays.toString(pathStrings));
+    MessageCli.FUEL_INFO.printMessage(String.valueOf(totalFuel));
+    MessageCli.CONTINENT_INFO.printMessage(formatted.toString());
+  }
+
+  public List<Country> findShortestPath(Country start, Country end) {
+
+    Set<Country> visited = new HashSet<>();
+
+    Queue<Country> queue = new LinkedList<>();
+
+    Map<Country, Country> parentMap = new HashMap<>();
+
+    visited.add(start);
+    queue.add(start);
+
+    while (!queue.isEmpty()) {
+      Country current = queue.poll();
+
+      for (Country neighbour : graph.getNeighbours(current)) {
+        if (!visited.contains(neighbour)) {
+          visited.add(neighbour);
+          parentMap.put(neighbour, current);
+          queue.add(neighbour);
+
+          if (neighbour.equals(end)) {
+            // we have found the path, now we need to work back and return it
+            List<Country> path = new LinkedList<>();
+            Country step = end;
+            while (step != null) {
+              path.add(0, step);
+              step = parentMap.get(step);
+            }
+            return path;
+          }
+        }
+      }
+    }
+
+    // no path found
+    return new ArrayList<>();
   }
 }
