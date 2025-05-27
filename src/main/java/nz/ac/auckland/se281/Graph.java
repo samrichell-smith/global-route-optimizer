@@ -18,8 +18,10 @@ public class Graph {
   }
 
   public void addConnection(Country from, Country to) {
-    adjacencyList.get(from).add(to);
-    adjacencyList.get(to).add(from); // if undirected
+    if (!from.equals(to)) {
+      adjacencyList.get(from).add(to);
+      adjacencyList.get(to).add(from);
+    }
   }
 
   public Set<Country> getNeighbours(Country country) {

@@ -1,14 +1,13 @@
 package nz.ac.auckland.se281;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 /** This class is the main entry point. */
 public class MapEngine {
 
   private Graph graph = new Graph();
-  public Set<Country> countryList = new HashSet<>();
+  public HashMap<String, Country> countryMap = new HashMap<>();
 
   public MapEngine() {
     // add other code here if you wan
@@ -24,7 +23,18 @@ public class MapEngine {
     for (String countryTemplate : countries) {
       String[] parts = countryTemplate.split(",");
       Country newCountry = new Country(parts[0], parts[1], Integer.parseInt(parts[2]));
-      countryList.add(newCountry);
+      countryMap.put(parts[0], newCountry);
+      graph.addCountry(newCountry);
+    }
+
+    for (String adjacencyTemplate : adjacencies) {
+      String[] parts = adjacencyTemplate.split(",");
+      Country startingCountry = countryMap.get(parts[0]);
+
+      for (String part : parts) {
+
+        graph.addConnection(startingCountry, countryMap.get(part));
+      }
     }
 
     // we want to make a hashmap to put countries into continents potentially? is that relevant?
