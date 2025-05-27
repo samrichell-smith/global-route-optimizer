@@ -1,9 +1,9 @@
 package nz.ac.auckland.se281;
 
 public class Country {
-  String name;
-  String continent;
-  int fuelCost;
+  private String name;
+  private String continent;
+  private int fuelCost;
 
   public Country(String name, String continent, int fuelCost) {
     this.name = name;
@@ -25,6 +25,7 @@ public class Country {
 
   @Override
   public boolean equals(Object obj) {
+    // overrides equals for correctly comparing to other countries
     if (this == obj) {
       return true;
     }

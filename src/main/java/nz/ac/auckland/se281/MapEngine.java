@@ -19,7 +19,7 @@ import java.util.Set;
 public class MapEngine {
 
   private Graph graph = new Graph();
-  public HashMap<String, Country> countryMap = new HashMap<>();
+  private HashMap<String, Country> countryMap = new HashMap<>();
 
   public MapEngine() {
     // add other code here if you wan
@@ -63,6 +63,7 @@ public class MapEngine {
     String cleanedInput = validateCountryInput(INSERT_COUNTRY);
 
     Country countryFound = countryMap.get(cleanedInput);
+    // gets all neighbours then formats them for printing
     Set<Country> neighbours = graph.getNeighbours(countryFound);
     String[] names = neighbours.stream().map(Country::getName).toArray(String[]::new);
 
@@ -73,11 +74,12 @@ public class MapEngine {
         Arrays.toString(names));
   }
 
-  // asks for country input until correct input entered
   public String validateCountryInput(MessageCli promptMessage) {
+    // asks for country input until correct input entered
     boolean valid = false;
     String cleanedInput = null;
 
+    // repeatedly prompts until correct
     while (!valid) {
       promptMessage.printMessage();
       String input = Utils.scanner.nextLine();
@@ -132,7 +134,10 @@ public class MapEngine {
     visitedContinents.add(route.get(0).getContinent());
     visitedContinents.add(route.get(route.size() - 1).getContinent());
 
+    // formatting the route of locations
     String[] pathStrings = route.stream().map(Country::getName).toArray(String[]::new);
+
+    // formatting continents and their fuel counts, shoul maintain order as entered
     List<String> formattedContinentCounts = new ArrayList<>();
     for (Map.Entry<String, Integer> entry : continentCount.entrySet()) {
       formattedContinentCounts.add(entry.getKey() + " (" + entry.getValue() + ")");
