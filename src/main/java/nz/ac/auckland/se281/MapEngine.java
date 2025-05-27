@@ -1,7 +1,9 @@
 package nz.ac.auckland.se281;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /** This class is the main entry point. */
 public class MapEngine {
@@ -20,6 +22,7 @@ public class MapEngine {
     List<String> countries = Utils.readCountries();
     List<String> adjacencies = Utils.readAdjacencies();
 
+    // creates all countries from csv and adds to graph
     for (String countryTemplate : countries) {
       String[] parts = countryTemplate.split(",");
       Country newCountry = new Country(parts[0], parts[1], Integer.parseInt(parts[2]));
@@ -27,6 +30,7 @@ public class MapEngine {
       graph.addCountry(newCountry);
     }
 
+    // adds all edges to graph
     for (String adjacencyTemplate : adjacencies) {
       String[] parts = adjacencyTemplate.split(",");
       Country startingCountry = countryMap.get(parts[0]);
@@ -42,7 +46,40 @@ public class MapEngine {
   }
 
   /** this method is invoked when the user run the command info-country. */
-  public void showInfoCountry() {}
+  public void showInfoCountry() {
+
+    boolean valid = false;
+    String cleanedInput = null;
+    while (!valid) {
+      MessageCli.INSERT_COUNTRY.printMessage();
+      String input = Utils.scanner.nextLine();
+      cleanedInput = Utils.capitalizeFirstLetterOfEachWord(input);
+      try {
+        valid = validateCountryInput(cleanedInput);
+      } catch (CountryNotFoundException e) {
+        MessageCli.INVALID_COUNTRY.printMessage(e.getMessage());
+      }
+    }
+
+    Country countryFound = countryMap.get(cleanedInput);
+    Set<Country> neighbours = graph.getNeighbours(countryFound);
+    String[] names = neighbours.stream().map(Country::getName).toArray(String[]::new);
+
+    MessageCli.COUNTRY_INFO.printMessage(
+        countryFound.getName(),
+        countryFound.getContinent(),
+        String.valueOf(countryFound.getFuelCost()),
+        Arrays.toString(names));
+  }
+
+  // checks
+  public boolean validateCountryInput(String input) throws CountryNotFoundException {
+    if (countryMap.containsKey(input)) {
+      return true;
+    } else {
+      throw new CountryNotFoundException(input);
+    }
+  }
 
   /** this method is invoked when the user run the command route. */
   public void showRoute() {}

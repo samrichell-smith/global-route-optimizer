@@ -39,6 +39,6 @@ public class Country {
 
   @Override
   public int hashCode() {
-    return name.toLowerCase().hashCode(); // keep consistent with equals
+    return name.toLowerCase().hashCode();
   }
 }
