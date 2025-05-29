@@ -144,7 +144,7 @@ public class MapEngine {
     }
 
     // Finding the continent where we spend the most fuel
-    int highestFuel = 0;
+    int highestFuel = -1;
     String highestFuelKey = null;
 
     for (String key : continentCount.keySet()) {
@@ -153,6 +153,7 @@ public class MapEngine {
         highestFuelKey = key;
       }
     }
+
     String formattedHighestFuel = highestFuelKey + " (" + highestFuel + ")";
 
     MessageCli.ROUTE_INFO.printMessage(Arrays.toString(pathStrings));
