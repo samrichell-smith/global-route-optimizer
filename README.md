@@ -36,4 +36,4 @@ It then provides a detailed fuel consumption report, broken down by continent, a
 
 ## Example Output
 
-<img src="global-route-optimizer/img/RouteOptimizerFullSS.png">
+<img src="/img/RouteOptimizerFullSS.png">
