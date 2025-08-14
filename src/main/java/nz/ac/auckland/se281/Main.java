@@ -76,7 +76,7 @@ public class Main {
     }
   }
 
-  private static final String COMMAND_PREFIX = "281-map> ";
+  private static final String COMMAND_PREFIX = "global-route-optimizer> ";
 
   public static void main(final String[] args) {
     new Main(new MapEngine()).start();
